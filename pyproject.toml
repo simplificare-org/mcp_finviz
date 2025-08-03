@@ -1,0 +1,23 @@
+[project]
+name = "mcp-finviz"
+version = "0.1.0"
+description = "MCP Server to FinViz"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+ "finvizfinance>=1.1.1",
+ "mcp>=1.12.3",
+ "pydantic>=2.11.7",
+ "pytz>=2025.2",
+ "syntropaibox>=0.1.11"
+]
+[[project.authors]]
+name = "paihari"
+email = "hpai.bantwal@gmail.com"
+
+[build-system]
+requires = [ "hatchling",]
+build-backend = "hatchling.build"
+
+[project.scripts]
+mcp-finviz = "mcp_finviz:main"
