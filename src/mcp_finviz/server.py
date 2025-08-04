@@ -71,7 +71,7 @@ async def main():
             raise ValueError(f"Unsupported URI scheme: {uri.scheme}")
         path = str(uri).replace("finvizfinance://", "")
         if path == "query_resources":
-            return json.dumps({"message": "Use the tool analyse-stocks-forex-crypto-fundamentals-technicals to submit a finvizfinance SDK code snippet."})
+            return json.dumps({"message": "Use the tool analyse-stocks-forex-crypto to submit a finvizfinance SDK code snippet."})
         else:
             raise ValueError(f"Unknown resource path: {path}")
 
@@ -79,7 +79,7 @@ async def main():
     async def handle_list_tools() -> list[types.Tool]:
         return [
             types.Tool(
-                name="analyse-stocks-forex-crypto-fundamentals-technicals",
+                name="analyse-stocks-forex-crypto",
                 description="Execute a code snippet using the finvizfinance SDK.",
                 inputSchema=finviz_querier.build_code_snippet_schema(
                     "Python code using finvizfinance SDK. Assign the result to a variable named 'result'."
@@ -89,7 +89,7 @@ async def main():
 
     @server.call_tool()
     async def handle_call_tool(name: str, arguments: dict[str, Any] | None):
-        if name == "analyse-stocks-forex-crypto-fundamentals-technicals":
+        if name == "analyse-stocks-forex-crypto":
             result = finviz_querier.run_code_tool(arguments)
             return [types.TextContent(type="text", text=result)]
         else:
