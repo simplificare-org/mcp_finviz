@@ -1,112 +1,101 @@
-# MCP Finviz Server
+# Finviz MCP Server - SyntropAI Ecosystem
 
-A Model Context Protocol (MCP) server that provides access to FinViz financial data through a secure, sandboxed execution environment. This server allows you to query stock, forex, and crypto market data using the finvizfinance Python SDK.
+**Part of the [SyntropAI MCP Ecosystem](https://github.com/paihari/documentation-syntropai)** - A unified multi-cloud abstraction framework.
 
-## Features
+This MCP (Model Context Protocol) server provides secure access to financial market data through the innovative SyntropAI abstraction layer. Built on the same security-first architecture as our cloud providers, this server demonstrates the ecosystem's versatility beyond cloud services.
 
-### 🔍 Financial Data Analysis
-- **Stock Analysis**: Get fundamental and technical data for stocks
-- **Forex Data**: Access foreign exchange market information
-- **Crypto Analysis**: Retrieve cryptocurrency market data
-- **S&P 500 Tracking**: Built-in S&P 500 ranking tracker with historical analysis
+## 🚀 Key Features
 
-### 🛡️ Security Features
-- **Sandboxed Execution**: Code runs in a secure environment with restricted imports
-- **Controlled Access**: Only allows specific modules (finvizfinance, operator, json, datetime, etc.)
-- **Error Handling**: Comprehensive error reporting and validation
+- **Universal Financial Data Access**: Stocks, forex, and cryptocurrency analysis
+- **Secure Code Execution**: AST-based validation and sandboxed execution environment
+- **Unified Abstraction Pattern**: Built on SyntropAI's provider-agnostic design
+- **Real-Time Market Data**: Live financial metrics and historical analysis
+- **Docker Containerization**: Production-ready deployment
 
-### 📊 Data Capabilities
-- Market capitalization data
-- Price and performance metrics
-- Fundamental ratios (P/E, ROE, etc.)
-- Sector and industry classifications
-- Historical performance data
-- Ranking and comparison tools
+## 🏗️ Architecture
 
-## Tools
+This server implements the SyntropAI abstraction pattern:
 
-### `analyse-stocks-forex-crypto-fundamentals-technicals`
+```
+Claude Desktop → MCP Protocol → Finviz MCP Server → SyntropAIBox → finvizfinance → Market Data
+```
 
-Execute Python code using the finvizfinance SDK to analyze financial instruments.
+### Core Components:
+- **FinvizSession**: Unified session management using `BaseSession`
+- **FinvizQuerier**: Secure query execution extending `BaseQuerier`
+- **AST Sandbox**: Safe code execution with timeout protection
+- **Dynamic Schema**: Runtime API documentation generation
 
-**Parameters:**
-- `code_snippet` (string, required): Python code that uses finvizfinance SDK. Must assign results to a variable named `result`.
+## 📋 Prerequisites
 
-**Example Usage:**
+- Python 3.10 or higher
+- Internet connection for market data access
+- Docker (recommended)
+- [SyntropAIBox](https://test.pypi.org/project/syntropaibox/) core library
+
+## 🐳 Docker Installation (Recommended)
+
+### Build and Run
+```bash
+# Build the image
+docker build -t mcp-finviz .
+
+# Run the container
+docker run -i --rm mcp-finviz:latest
+```
+
+## ⚙️ Claude Desktop Integration
+
+Add to your `claude_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "finviz-finance": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "mcp-finviz:latest"
+      ]
+    }
+  }
+}
+```
+
+## 🛡️ Security Features
+
+### AST-Based Validation
+- Prevents malicious code injection
+- Whitelisted imports and functions
+- Controlled execution environment
+
+### Safe Execution
+- Timeout protection (2-second default)
+- Isolated namespace
+- JSON-serialized responses
+
+### Example Safe Query
 ```python
-# Get stock fundamentals
-stock = finvizfinance('AAPL')
-fundamentals = stock.ticker_fundament()
-result = fundamentals
-
-# Screen stocks by criteria
-screener = Overview()
-screener.set_filter(sector='Technology')
-result = screener.screener_view()
-
-# Get forex data
-forex = finvizfinance('EURUSD')
-result = forex.ticker_fundament()
+# User provides this code snippet:
+from finvizfinance import stock
+aapl = stock('AAPL')
+result = aapl.ticker_fundament()
 ```
 
-## Installation & Setup
+The system:
+1. ✅ Validates AST syntax
+2. ✅ Checks allowed imports (`finvizfinance` approved)
+3. ✅ Executes in sandbox with timeout
+4. ✅ Returns JSON-serialized results
 
-### Option 1: Docker (Recommended)
-
-1. **Build the Docker image:**
-```bash
-docker build -t mcp-finviz:latest .
-```
-
-2. **Configure your MCP client** (e.g., Claude Desktop):
-
-```json
-{
-    "mcpServers": {
-        "finviz-finance": {
-            "command": "docker",
-            "args": [
-                "run",
-                "--rm",
-                "-i",
-                "mcp-finviz:latest"
-            ]
-        }
-    }
-}
-```
-
-### Option 2: Local Development
-
-1. **Install dependencies:**
-```bash
-pip install finvizfinance mcp pydantic pytz syntropaibox
-```
-
-2. **Install the package:**
-```bash
-pip install -e .
-```
-
-3. **Configure for local development:**
-```json
-{
-    "mcpServers": {
-        "finviz-finance": {
-            "command": "python",
-            "args": ["-m", "mcp_finviz"]
-        }
-    }
-}
-```
-
-## Usage Examples
+## 🔧 Usage Examples
 
 ### Stock Analysis
 ```python
 # Get Apple stock fundamentals
-stock = finvizfinance('AAPL')
-fundamentals = stock.ticker_fundament()
+from finvizfinance import stock
+aapl = stock('AAPL')
+fundamentals = aapl.ticker_fundament()
 result = {
     'company': fundamentals.get('Company'),
     'price': fundamentals.get('Price'),
@@ -119,7 +108,8 @@ result = {
 ### Stock Screening
 ```python
 # Find technology stocks with P/E < 20
-screener = Overview()
+from finvizfinance import overview
+screener = overview.Overview()
 screener.set_filter(sector='Technology', pe='Under 20')
 result = screener.screener_view()
 ```
@@ -127,152 +117,167 @@ result = screener.screener_view()
 ### Forex Analysis
 ```python
 # Get EUR/USD data
-forex = finvizfinance('EURUSD')
-forex_data = forex.ticker_fundament()
-result = forex_data
+from finvizfinance import forex
+eurusd = forex.Forex('EURUSD')
+result = eurusd.ticker_fundament()
 ```
 
-### S&P 500 Ranking Analysis
-The server includes a built-in S&P 500 ranking tracker that can:
-- Track market cap changes over time
-- Analyze ranking movements
-- Generate reports on biggest movers
-- Export results to CSV
-
-## Security
-
-The server implements several security measures:
-
-- **Restricted Imports**: Only allows specific modules and packages
-- **Sandboxed Execution**: Code runs in a controlled environment
-- **Input Validation**: All code is parsed and validated before execution
-- **Error Isolation**: Errors are caught and reported without exposing system details
-
-### Allowed Modules
-- `finvizfinance` - Main financial data SDK
-- `operator` - For data operations
-- `json` - For data serialization
-- `datetime`, `pytz`, `dateutil` - For date/time operations
-- `re`, `time`, `sys` - For basic operations
-- `base64`, `pydantic` - For data handling
-
-## Development
-
-### Project Structure
-```
-mcp_finviz/
-├── src/mcp_finviz/
-│   ├── __init__.py          # Package initialization
-│   ├── __main__.py          # Entry point
-│   ├── server.py            # MCP server implementation
-│   ├── finviz_analysis.py   # S&P 500 tracking functionality
-│   └── sandbox.py           # Security sandbox (if needed)
-├── Dockerfile               # Docker configuration
-├── pyproject.toml           # Project configuration
-└── README.md               # This file
+### Cryptocurrency Analysis
+```python
+# Get Bitcoin data
+from finvizfinance import crypto
+btc = crypto.Crypto('BTCUSD')
+result = btc.ticker_fundament()
 ```
 
-### Building and Publishing
+### Sector Performance
+```python
+# Analyze sector performance
+from finvizfinance import group
+sectors = group.Group()
+sectors.set_filter(group='Sector')
+result = sectors.screener_view()
+```
 
-1. **Update dependencies:**
+## 🌟 SyntropAI Ecosystem Benefits
+
+### Unified Architecture
+- Same security patterns as cloud providers
+- Consistent authentication and error handling
+- Provider-agnostic abstractions
+
+### Non-Hardcoded Data Sources
+- Supports **any** finvizfinance feature automatically
+- No data source limitations
+- Future features work immediately
+
+### Enterprise Ready
+- Security-first design
+- Docker containerization
+- Comprehensive logging
+
+## 📊 Financial Data Coverage
+
+### Stock Market Data
+- **Fundamentals**: P/E ratios, market cap, revenue, earnings
+- **Technicals**: Price, volume, moving averages, RSI
+- **Company Info**: Sector, industry, description, executives
+- **Financial Statements**: Income, balance sheet, cash flow
+
+### Screening Capabilities
+- **Valuation**: P/E, P/B, PEG, EV/EBITDA
+- **Performance**: Price change, volume, volatility
+- **Financial Health**: Debt/Equity, ROE, ROI, margins
+- **Growth**: Revenue growth, earnings growth, analyst estimates
+
+### Market Sectors
+- Technology, Healthcare, Financial, Energy
+- Consumer Cyclical, Utilities, Industrials
+- Real Estate, Materials, Communication Services
+- Consumer Defensive, Basic Materials
+
+### International Markets
+- Major world indices
+- International stock screening
+- Currency pair analysis
+- Global sector performance
+
+## 🔗 Related Projects
+
+- **[Main Documentation](https://github.com/paihari/documentation-syntropai)**: Complete ecosystem overview and architecture
+- **[SyntropAIBox Core](https://test.pypi.org/project/syntropaibox/)**: Shared abstraction library
+- **[AWS MCP Server](../mcp-server-for-aws)**: AWS implementation
+- **[Azure MCP Server](../mcp-server-azure)**: Azure implementation
+- **[OCI MCP Server](../mcp-server-oci)**: Oracle Cloud implementation
+
+## 🏆 Technical Highlights
+
+This implementation showcases:
+- **Cross-Domain Abstraction**: Same patterns work for financial data as cloud services
+- **Security Engineering**: AST validation prevents financial data manipulation
+- **Extensible Architecture**: Easy integration of new financial data sources
+- **Production Deployment**: Containerized, scalable financial analysis
+
+## 📞 Support
+
+For questions about the SyntropAI MCP ecosystem:
+- **Documentation**: [SyntropAI Documentation Project](https://github.com/paihari/documentation-syntropai)
+- **Author**: Hari Bantwal (hpai.bantwal@gmail.com)
+
+## 🔄 Manual Installation (Development)
+
 ```bash
-pip install build twine
+# Clone repository
+git clone <repository-url>
+cd mcp_finviz
+
+# Install dependencies
+pip install -e .
+
+# Install additional dependencies
+pip install finvizfinance syntropaibox
+
+# Run server
+python -m mcp_finviz
 ```
 
-2. **Build package:**
-```bash
-python -m build
+## 🔍 Advanced Financial Analysis
+
+### Portfolio Analysis
+```python
+# Analyze multiple stocks
+tickers = ['AAPL', 'GOOGL', 'MSFT', 'AMZN']
+portfolio_data = {}
+for ticker in tickers:
+    stock_obj = stock(ticker)
+    portfolio_data[ticker] = stock_obj.ticker_fundament()
+result = portfolio_data
 ```
 
-3. **Publish to PyPI:**
-```bash
-python -m twine upload dist/*
+### Market Trends
+```python
+# Get market overview
+from finvizfinance import overview
+market = overview.Overview()
+market.set_filter(marketcap='+Large')
+result = market.screener_view()
 ```
 
-### Debugging
-
-Use the MCP Inspector for debugging:
-
-```bash
-npx @modelcontextprotocol/inspector python -m mcp_finviz
+### Risk Analysis
+```python
+# Analyze high-volatility stocks  
+from finvizfinance import screener
+risk_screener = screener.Screener()
+risk_screener.set_filter(volatility='High')
+result = risk_screener.screener_view()
 ```
 
-## Configuration Files
+## 🛡️ Security Considerations for Financial Data
 
-### Claude Desktop Configuration
+### Data Integrity
+- All market data is validated before processing
+- Financial calculations are performed in isolated environment
+- Results are sanitized to prevent data corruption
 
-**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
-**Windows:** `%APPDATA%/Claude/claude_desktop_config.json`
+### Access Control
+- Only approved financial analysis functions allowed
+- No system-level operations permitted
+- Read-only access to market data
 
-### Example Configurations
+### Compliance
+- Respects finviz.com rate limits and terms of service
+- No unauthorized data scraping or manipulation
+- Proper attribution of data sources
 
-**Docker (Production):**
-```json
-{
-    "mcpServers": {
-        "finviz-finance": {
-            "command": "docker",
-            "args": [
-                "run",
-                "--rm",
-                "-i",
-                "mcp-finviz:latest"
-            ]
-        }
-    }
-}
-```
+## 🌐 Demonstration of Ecosystem Versatility
 
-**Local Development:**
-```json
-{
-    "mcpServers": {
-        "finviz-finance": {
-            "command": "python",
-            "args": ["-m", "mcp_finviz"]
-        }
-    }
-}
-```
+This financial data server proves the SyntropAI abstraction can extend beyond cloud providers to any API or service, showcasing:
 
-## Error Handling
+- **Universal Applicability**: Same security patterns work for any data source
+- **Consistent User Experience**: Familiar patterns across cloud and financial services
+- **Extensible Foundation**: Easy to add new financial data providers
+- **Production Scalability**: Enterprise-ready financial analysis capabilities
 
-The server provides detailed error messages for:
-- Syntax errors in code snippets
-- Unauthorized module imports
-- Missing result assignments
-- Network or API errors
-- Invalid data formats
+---
 
-## Rate Limiting
-
-The finvizfinance SDK has built-in rate limiting. The server respects these limits and provides appropriate delays between requests to avoid being blocked.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support
-
-For issues and questions:
-- Check the error messages for debugging information
-- Review the allowed modules list
-- Ensure your code assigns results to the `result` variable
-- Verify your MCP client configuration
-
-## Changelog
-
-### v0.1.0
-- Initial release
-- Basic finvizfinance integration
-- S&P 500 tracking functionality
-- Docker support
-- Security sandbox implementation
+*This server demonstrates how the SyntropAI MCP ecosystem extends beyond cloud services to provide secure, unified access to any external API or data source through innovative architectural patterns.*
